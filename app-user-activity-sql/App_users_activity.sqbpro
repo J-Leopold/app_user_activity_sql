@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="/Users/jnetteleopold/Desktop/App_user_activity.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="3"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="837"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="0"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><table title="events" custom_title="0" dock_id="1" table="4,6:mainevents"/><dock_state state="000000ff00000000fd0000000100000002000001c30000021ffc0100000001fb000000160064006f0063006b00420072006f00770073006500310100000000000001c30000010100ffffff000001c30000000000000004000000040000000800000008fc00000000"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="events" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="64"/><column index="2" value="58"/><column index="3" value="81"/><column index="4" value="97"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="SQL 1*">CREATE TABLE users (
+    user_id INTEGER PRIMARY KEY,
+    name TEXT,
+    signup_date DATE,
+    device_type TEXT
+);
+
+CREATE TABLE events (
+    event_id INTEGER PRIMARY KEY,
+    user_id INTEGER,
+    event_type TEXT,
+    event_time DATETIME,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+INSERT INTO users (user_id, name, signup_date, device_type) VALUES
+(1, 'Alex', '2024-01-01', 'iOS'),
+(2, 'Blake', '2024-01-05', 'Android'),
+(3, 'Casey', '2024-01-10', 'Web'),
+(4, 'Dana', '2024-01-15', 'iOS');
+
+INSERT INTO events (event_id, user_id, event_type, event_time) VALUES
+(1, 1, 'login', '2024-01-01 09:00'),
+(2, 1, 'purchase', '2024-01-01 09:30'),
+(3, 2, 'login', '2024-01-05 10:00'),
+(4, 2, 'logout', '2024-01-05 10:20'),
+(5, 4, 'login', '2024-01-15 11:00');
+
+SELECT * FROM users;
+
+SELECT * FROM events;
+
+
+Select *
+From users
+Where signup_date &gt;= '2024-01-05';
+
+
+SELECT device_type, COUNT (*) AS user_count
+FROM users
+GROUP BY device_type; 
+
+
+Select MIN (signup_date) AS early_signup
+FROM users
+
+
+SELECT device_type, COUNT (*) AS user_count
+FROM users
+group BY device_type
+HAVING COUNT (*) &gt; 1;
+
+
+SELECT name, event_type, event_time
+FROM users
+INNER JOIN events 
+ON users.user_id = events.user_id; 
+
+SELECT name, event_type
+FROM users 
+LEFT JOIN events 
+on users.user_id = events.user_id 
+
+SELECT name, event_type
+FROM users
+left JOIN events 
+on  users.user_id = events.user_id
+AND events.event_type = 'login'
+WHERE events.user_id IS NULL
+
+SELECT name, COUNT (event_type) AS num_events
+from users
+Left join events
+on users.user_id = events.user_id
+GROUP BY name;
+
+SELECT name, COUNT (event_type) AS num_events
+FROM users
+left join events 
+on users.user_id = events.user_id 
+GROUP BY name
+HAVING COUNT (event_type) &gt; 1
+
+
+Select DATE (event_time) AS event_date,  
+	         COUNT (DISTINCT user_id) As active_users
+FROM events 
+GROUP BY DATE (event_time) 
+
+
+SELECT u.name
+FROM users u
+LEFT JOIN events e 
+ON u.user_id = e.user_id
+GROUP BY u.name
+HAVING SUM (CASE WHEN e.event_type = 'login' THen 1 else 0 end) &gt;= 1 AND
+SUM (CASE WHEN e.event_type = 'purchase' then 1 else 0 end) = 0
+ 
+</sql><current_tab id="0"/></tab_sql></sqlb_project>
